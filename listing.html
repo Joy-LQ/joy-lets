@@ -88,6 +88,10 @@
       const listing = data.listings.find(l => l.id === id);
       if (!listing) return;
       document.title = listing.title + ' · Joy Lets';
+      if (listing.photos && listing.photos.length > 0) {
+        const photoEl = document.getElementById('detail-photo');
+        photoEl.outerHTML = `<img class="detail-photo" id="detail-photo" src="${listing.photos[0]}" alt="${listing.title}">`;
+      }
       document.getElementById('detail-title').textContent = listing.title;
       document.getElementById('detail-type').textContent = listing.type + (listing.furnished ? ' · Furnished' : '');
       document.getElementById('detail-rating').textContent = listing.rating;
