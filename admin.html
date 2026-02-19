@@ -343,10 +343,20 @@
   <!-- Manage -->
   <div class="admin-section" id="tab-manage">
 
-    <div class="export-box">
-      <div class="export-box-title">📤 Publish to Live Site</div>
-      <div class="export-box-desc">Your changes are saved locally. To make them visible to tenants, tap below to copy the JSON and send it to your developer.</div>
-      <button class="action-btn secondary" style="margin-top:12px" onclick="exportJSON()">Copy JSON to Clipboard</button>
+    <!-- GitHub Token setup (one-time) -->
+    <div class="export-box" id="token-setup" style="display:none">
+      <div class="export-box-title">🔑 First-time Setup</div>
+      <div class="export-box-desc" style="margin-bottom:10px">Paste your GitHub token once to enable one-tap publishing.</div>
+      <input type="password" id="gh-token-input" placeholder="ghp_xxxxxxxxxxxx"
+        style="width:100%;border:1.5px solid var(--neutral-40);border-radius:8px;padding:10px 12px;font-size:13px;box-sizing:border-box;margin-bottom:8px;font-family:monospace">
+      <button class="action-btn primary" style="margin-top:0;padding:12px" onclick="saveToken()">Save Token</button>
+    </div>
+
+    <div class="export-box" id="publish-box">
+      <div class="export-box-title">🚀 Publish to Live Site</div>
+      <div class="export-box-desc">Push your changes directly to GitHub — tenants will see updates within 1 minute.</div>
+      <button class="action-btn primary" style="margin-top:12px;background:#1a8a4a" onclick="publishToGitHub()">🚀 Publish Now</button>
+      <button class="action-btn secondary" style="margin-top:8px;font-size:13px" onclick="resetToken()">Change GitHub Token</button>
     </div>
 
     <div id="manage-list"></div>
@@ -381,7 +391,7 @@
     });
     document.getElementById('tab-add').classList.toggle('active', tab === 'add');
     document.getElementById('tab-manage').classList.toggle('active', tab === 'manage');
-    if (tab === 'manage') renderManage();
+    if (tab === 'manage') { renderManage(); initPublishBox(); }
   }
 
   function selectStatus(s) {
@@ -638,16 +648,79 @@
     renderManage();
   }
 
-  function exportJSON() {
-    fetch('data/listings.json').then(r => r.json()).then(data => {
+  function saveToken() {
+    const token = document.getElementById('gh-token-input').value.trim();
+    if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+      alert('Please enter a valid GitHub token (starts with ghp_)');
+      return;
+    }
+    localStorage.setItem('gh_token', token);
+    document.getElementById('token-setup').style.display = 'none';
+    document.getElementById('publish-box').style.display = 'block';
+    showToast('Token saved!');
+  }
+
+  function resetToken() {
+    localStorage.removeItem('gh_token');
+    document.getElementById('token-setup').style.display = 'block';
+    document.getElementById('publish-box').style.display = 'none';
+  }
+
+  function initPublishBox() {
+    const hasToken = !!localStorage.getItem('gh_token');
+    document.getElementById('token-setup').style.display = hasToken ? 'none' : 'block';
+    document.getElementById('publish-box').style.display = hasToken ? 'block' : 'none';
+  }
+
+  async function publishToGitHub() {
+    const token = localStorage.getItem('gh_token');
+    if (!token) { resetToken(); return; }
+
+    const btn = document.querySelector('#publish-box .action-btn.primary');
+    btn.textContent = 'Publishing...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('data/listings.json');
+      const data = await res.json();
       const local = JSON.parse(localStorage.getItem('listings') || '[]');
       const localIds = new Set(local.map(l => l.id));
       const merged = [...local, ...data.listings.filter(l => !localIds.has(l.id))];
-      const json = JSON.stringify({ listings: merged }, null, 2);
-      navigator.clipboard.writeText(json).then(() => {
-        showToast('JSON copied! Send to developer to publish.');
+      const newContent = JSON.stringify({ listings: merged }, null, 2);
+
+      // Get current file SHA
+      const fileRes = await fetch('https://api.github.com/repos/Joy-LQ/joy-lets/contents/data/listings.json', {
+        headers: { Authorization: 'token ' + token }
       });
-    });
+      const fileData = await fileRes.json();
+      if (!fileData.sha) throw new Error('Could not fetch file info');
+
+      // Push updated file
+      const updateRes = await fetch('https://api.github.com/repos/Joy-LQ/joy-lets/contents/data/listings.json', {
+        method: 'PUT',
+        headers: {
+          Authorization: 'token ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Update listings from admin panel',
+          content: btoa(unescape(encodeURIComponent(newContent))),
+          sha: fileData.sha
+        })
+      });
+
+      if (!updateRes.ok) {
+        const err = await updateRes.json();
+        throw new Error(err.message || 'GitHub API error');
+      }
+
+      showToast('Published! Live in ~1 minute ✓');
+    } catch (e) {
+      alert('Publish failed: ' + e.message + '\n\nIf your token expired, tap "Change GitHub Token".');
+    } finally {
+      btn.textContent = '🚀 Publish Now';
+      btn.disabled = false;
+    }
   }
 
   function showToast(msg) {
