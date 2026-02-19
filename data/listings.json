@@ -59,6 +59,26 @@
       "amenities": ["WiFi", "Garden", "Washing Machine", "Central Heating"],
       "furnished": true,
       "bills": false
+    },
+    {
+      "id": "5",
+      "title": "Ladybarn Lane, Manchester M14",
+      "description": "Beautifully presented 2-bed 2-bath house with private garden and parking. Fully furnished, ideal for professionals or families.",
+      "type": "2 Bed",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "price": 1195,
+      "available": "2026-03-01",
+      "rating": 5.0,
+      "reviews": 0,
+      "photos": [
+        "https://imagescdn.openrent.co.uk/listings/1898334/o_1hf9vbh921j3rtie16v07113io3.JPG",
+        "https://imagescdn.openrent.co.uk/listings/1898334/o_1hf9vd82714g71sq21h57kio1vvpa.JPG",
+        "https://imagescdn.openrent.co.uk/listings/1898334/o_1hf9vdb9l128f1s1m35215l8i63b.JPG"
+      ],
+      "amenities": ["Garden", "Parking", "Central Heating", "Washing Machine", "Double Glazing"],
+      "furnished": true,
+      "bills": false
     }
   ]
 }
