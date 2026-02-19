@@ -207,14 +207,13 @@
 
     try {
       await emailjs.send('service_5onxiwg', 'template_besuj5b', {
-        from_name: name,
+        name: name,
         phone: phone,
-        from_email: email,
-        property: property || 'Not specified',
+        email: email,
+        title: property || 'Not specified',
         move_in: movein || 'Not specified',
         lease: lease || 'Not specified',
-        message: msg || '—',
-        to_email: 'info.manlive@gmail.com'
+        message: msg || '—'
       });
 
       document.getElementById('enq-form-section').style.display = 'none';
