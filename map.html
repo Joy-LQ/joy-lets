@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Map · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    #map {
+      width: 100%;
+      height: calc(100vh - 120px);
+      z-index: 1;
+    }
+    .map-popup-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0A0A0A;
+      margin-bottom: 2px;
+    }
+    .map-popup-price {
+      font-size: 13px;
+      color: #D42F4D;
+      font-weight: 600;
+    }
+    .map-popup-type {
+      font-size: 12px;
+      color: #717375;
+      margin-bottom: 6px;
+    }
+    .map-popup-link {
+      display: inline-block;
+      font-size: 12px;
+      background: #0A0A0A;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span class="time" id="clock">9:41</span>
+    <span class="icons">▲ WiFi 🔋</span>
+  </div>
+
+  <div class="page-header">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="page-title">Map View</span>
+  </div>
+
+  <div id="map"></div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item active" href="index.html">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Browse</span>
+    </a>
+    <a class="nav-item" href="saved.html">
+      <span class="nav-icon">🤍</span>
+      <span class="nav-label">Shortlist</span>
+    </a>
+    <a class="nav-item" href="enquiries.html">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Enquiries</span>
+    </a>
+    <a class="nav-item" href="#" onclick="window.open('https://wa.me/447510757408','_blank')">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Messages</span>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateClock();
+
+  const map = L.map('map').setView([53.4808, -2.2426], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Custom pin icon
+  const pinIcon = L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#D42F4D;
+      color:white;
+      border-radius:20px;
+      padding:4px 10px;
+      font-size:12px;
+      font-weight:700;
+      font-family:-apple-system,sans-serif;
+      white-space:nowrap;
+      box-shadow:0 2px 8px rgba(0,0,0,0.25);
+      border:2px solid white;
+    ">£PRICE</div>`,
+    iconAnchor: [30, 16]
+  });
+
+  fetch('data/listings.json')
+    .then(r => r.json())
+    .then(data => {
+      const all = [...JSON.parse(localStorage.getItem('listings') || '[]'), ...data.listings];
+      all.forEach(listing => {
+        if (!listing.coordinates) return;
+        const [lat, lng] = listing.coordinates;
+        const tenants = listing.maxTenants || 1;
+        const weeklyPP = Math.round(listing.price * 12 / 52 / tenants);
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="
+            background:#D42F4D;
+            color:white;
+            border-radius:20px;
+            padding:4px 10px;
+            font-size:12px;
+            font-weight:700;
+            font-family:-apple-system,sans-serif;
+            white-space:nowrap;
+            box-shadow:0 2px 8px rgba(0,0,0,0.25);
+            border:2px solid white;
+            cursor:pointer;
+          ">£${listing.price.toLocaleString()}</div>`,
+          iconAnchor: [30, 16]
+        });
+
+        const photoHTML = listing.photos && listing.photos.length > 0
+          ? `<img src="${listing.photos[0]}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:8px;">`
+          : '';
+
+        const popup = L.popup({ maxWidth: 220, minWidth: 200 }).setContent(`
+          ${photoHTML}
+          <div class="map-popup-title">${listing.title}</div>
+          <div class="map-popup-type">${listing.type}${listing.furnished ? ' · Furnished' : ''}</div>
+          <div class="map-popup-price">£${listing.price.toLocaleString()}/mo · £${weeklyPP} pp/wk</div>
+          <br>
+          <a class="map-popup-link" href="listing.html?id=${listing.id}">View Details →</a>
+        `);
+
+        L.marker([lat, lng], { icon }).addTo(map).bindPopup(popup);
+      });
+    });
+</script>
+</body>
+</html>
