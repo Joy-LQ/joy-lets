@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Saved · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span class="time" id="clock">9:41</span>
+    <span class="icons">▲ WiFi 🔋</span>
+  </div>
+
+  <div class="page-header">
+    <span class="page-title">Saved Properties</span>
+  </div>
+
+  <div class="listings" id="saved-container" style="padding-top:16px">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Browse</span>
+    </a>
+    <a class="nav-item active" href="saved.html">
+      <span class="nav-icon">❤️</span>
+      <span class="nav-label">Saved</span>
+    </a>
+    <a class="nav-item" href="enquiries.html">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Enquiries</span>
+    </a>
+    <a class="nav-item" href="#" onclick="openWhatsApp()">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Messages</span>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateClock();
+
+  function openWhatsApp() {
+    window.open('https://wa.me/447700000000', '_blank');
+  }
+
+  const savedIds = JSON.parse(localStorage.getItem('savedListings') || '[]');
+  const container = document.getElementById('saved-container');
+
+  if (savedIds.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:60px 24px;color:var(--neutral-70)">No saved properties yet.<br>Tap 🤍 on any listing to save it.</div>';
+  } else {
+    fetch('data/listings.json')
+      .then(r => r.json())
+      .then(data => {
+        const all = [...JSON.parse(localStorage.getItem('listings') || '[]'), ...data.listings];
+        const saved = all.filter(l => savedIds.includes(l.id));
+
+        if (saved.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:60px 24px;color:var(--neutral-70)">No saved properties found.</div>';
+          return;
+        }
+
+        saved.forEach(listing => {
+          const avail = new Date(listing.available);
+          const availStr = avail.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+          const tenants = listing.maxTenants || 1;
+          const weeklyPP = Math.round(listing.price * 12 / 52 / tenants);
+
+          const photoContent = listing.photos && listing.photos.length > 0
+            ? `<img class="listing-photo" src="${listing.photos[0]}" alt="${listing.title}">`
+            : `<div class="listing-photo-placeholder">🏠</div>`;
+
+          const card = document.createElement('div');
+          card.className = 'listing-card';
+          card.onclick = () => location.href = 'listing.html?id=' + listing.id;
+          card.innerHTML = `
+            <div class="listing-photo-wrap">
+              ${photoContent}
+              <button class="save-btn" data-id="${listing.id}" onclick="event.stopPropagation(); unsave(this, '${listing.id}')">❤️</button>
+              <div class="available-badge">Available ${availStr}</div>
+            </div>
+            <div class="listing-info">
+              <div>
+                <div class="listing-title">${listing.title}</div>
+                <div class="listing-desc">${listing.description}</div>
+                <div class="listing-type">${listing.type}${listing.furnished ? ' · Furnished' : ''}</div>
+                <div class="listing-price">£${listing.price.toLocaleString()} <span>/month</span></div>
+                <div class="listing-weekly">£${weeklyPP} <span>pp/week</span></div>
+              </div>
+              <div class="listing-rating">
+                <span class="star">⭐</span> ${listing.rating}
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      });
+  }
+
+  function unsave(btn, id) {
+    const saved = JSON.parse(localStorage.getItem('savedListings') || '[]');
+    const idx = saved.indexOf(id);
+    if (idx !== -1) saved.splice(idx, 1);
+    localStorage.setItem('savedListings', JSON.stringify(saved));
+    btn.closest('.listing-card').remove();
+    if (document.querySelectorAll('.listing-card').length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:60px 24px;color:var(--neutral-70)">No saved properties yet.<br>Tap 🤍 on any listing to save it.</div>';
+    }
+  }
+</script>
+</body>
+</html>

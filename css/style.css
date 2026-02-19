@@ -123,7 +123,15 @@ body {
   gap: 32px;
 }
 
-.listing-card { cursor: pointer; }
+.listing-card {
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+}
 .listing-card:hover .listing-photo { transform: scale(1.02); }
 
 .listing-photo-wrap {
@@ -196,6 +204,12 @@ body {
   margin-top: 8px;
 }
 .listing-price span { font-weight: var(--font-book); }
+.listing-weekly {
+  font-size: 12px;
+  color: var(--neutral-70);
+  margin-top: 2px;
+}
+.listing-weekly span { font-weight: var(--font-book); }
 .listing-rating {
   display: flex;
   align-items: center;

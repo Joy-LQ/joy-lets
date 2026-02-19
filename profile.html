@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>About · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .profile-hero {
+      background: var(--neutral-100);
+      color: white;
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    .profile-logo {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+    .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .profile-tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 6px;
+    }
+    .profile-body {
+      padding: 24px 24px 120px;
+    }
+    .profile-section {
+      margin-bottom: 28px;
+    }
+    .profile-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neutral-70);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .profile-text {
+      font-size: 14px;
+      color: var(--neutral-80);
+      line-height: 22px;
+    }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--neutral-20);
+      text-decoration: none;
+      color: var(--neutral-100);
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-icon { font-size: 20px; width: 28px; text-align: center; }
+    .contact-label { font-size: 14px; flex: 1; }
+    .contact-value { font-size: 13px; color: var(--neutral-70); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span class="time" id="clock">9:41</span>
+    <span class="icons">▲ WiFi 🔋</span>
+  </div>
+
+  <div class="profile-hero">
+    <div class="profile-logo">🏠</div>
+    <div class="profile-name">Joy Lets</div>
+    <div class="profile-tagline">Manchester · Trusted Lettings</div>
+  </div>
+
+  <div class="profile-body">
+
+    <div class="profile-section">
+      <div class="profile-section-title">About Us</div>
+      <div class="profile-text">
+        Joy Lets is a Manchester-based property letting agency specialising in quality furnished homes across the city.
+        We offer 10 and 12-month Assured Shorthold Tenancies, ideal for professionals, students, and families looking for a comfortable home.
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">Areas We Cover</div>
+      <div class="profile-text">
+        Ancoats · Northern Quarter · Chorlton · Salford · Didsbury · Ladybarn · Withington · Fallowfield
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">Contact Us</div>
+      <a class="contact-row" href="tel:+447700000000">
+        <span class="contact-icon">📞</span>
+        <span class="contact-label">Phone</span>
+        <span class="contact-value">+44 7700 000000</span>
+      </a>
+      <a class="contact-row" href="https://wa.me/447700000000" target="_blank">
+        <span class="contact-icon">💬</span>
+        <span class="contact-label">WhatsApp</span>
+        <span class="contact-value">Message us</span>
+      </a>
+      <a class="contact-row" href="mailto:hello@man-live.uk">
+        <span class="contact-icon">✉️</span>
+        <span class="contact-label">Email</span>
+        <span class="contact-value">hello@man-live.uk</span>
+      </a>
+      <a class="contact-row" href="https://www.man-live.uk" target="_blank">
+        <span class="contact-icon">🌐</span>
+        <span class="contact-label">Website</span>
+        <span class="contact-value">www.man-live.uk</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Browse</span>
+    </a>
+    <a class="nav-item" href="saved.html">
+      <span class="nav-icon">🤍</span>
+      <span class="nav-label">Saved</span>
+    </a>
+    <a class="nav-item" href="enquiries.html">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Enquiries</span>
+    </a>
+    <a class="nav-item" href="#" onclick="window.open('https://wa.me/447700000000','_blank')">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Messages</span>
+    </a>
+    <a class="nav-item active" href="profile.html">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateClock();
+</script>
+</body>
+</html>

@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=375px, initial-scale=1.0">
   <title>Search · Joy Lets</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .filter-input {
+      width: 100%;
+      border: 1.5px solid var(--neutral-40);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+    .filter-input:focus { border-color: var(--neutral-100); }
+    .weekly-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--neutral-70);
+      margin-top: 4px;
+    }
+    .range-slider {
+      width: 100%;
+      margin-top: 10px;
+      accent-color: var(--neutral-100);
+    }
+    .weekly-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-100);
+      margin-top: 6px;
+    }
+  </style>
 </head>
 <body>
 <div class="app">
@@ -48,6 +80,20 @@
         <span class="tenure-check" id="check-12"></span>
       </div>
     </div>
+  </div>
+
+  <!-- Postcode Filter -->
+  <div class="filter-section">
+    <div class="filter-section-title">Postcode area</div>
+    <input class="filter-input" id="postcode-input" type="text" placeholder="e.g. M1, M14, M21" maxlength="4">
+  </div>
+
+  <!-- Weekly Price Filter -->
+  <div class="filter-section">
+    <div class="filter-section-title">Max budget per person per week</div>
+    <input type="range" class="range-slider" id="weekly-slider" min="50" max="400" step="10" value="400">
+    <div class="weekly-value">Up to £<span id="weekly-display">400</span>/pp per week</div>
+    <div class="weekly-labels"><span>£50</span><span>£400+</span></div>
   </div>
 
   <!-- Apply -->
@@ -100,9 +146,38 @@
   // Restore saved tenure
   if (selectedTenure) selectTenure(selectedTenure);
 
+  // Restore saved postcode
+  const savedPostcode = localStorage.getItem('postcodeFilter') || '';
+  document.getElementById('postcode-input').value = savedPostcode;
+
+  // Weekly slider
+  const slider = document.getElementById('weekly-slider');
+  const display = document.getElementById('weekly-display');
+  const savedWeekly = localStorage.getItem('maxWeekly') || '400';
+  slider.value = savedWeekly;
+  display.textContent = savedWeekly === '400' ? '400+' : savedWeekly;
+  slider.addEventListener('input', () => {
+    display.textContent = slider.value === '400' ? '400+' : slider.value;
+  });
+
   function applySearch() {
     if (selectedMonth) localStorage.setItem('startMonth', selectedMonth);
     if (selectedTenure) localStorage.setItem('tenure', selectedTenure);
+
+    const postcode = document.getElementById('postcode-input').value.trim();
+    if (postcode) {
+      localStorage.setItem('postcodeFilter', postcode);
+    } else {
+      localStorage.removeItem('postcodeFilter');
+    }
+
+    const weekly = slider.value;
+    if (weekly < 400) {
+      localStorage.setItem('maxWeekly', weekly);
+    } else {
+      localStorage.removeItem('maxWeekly');
+    }
+
     location.href = 'index.html';
   }
 </script>
