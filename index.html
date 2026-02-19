@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Joy Lets · Manchester</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time" id="clock">9:41</span>
+    <span class="icons">▲ WiFi 🔋</span>
+  </div>
+
+  <!-- Search Bar (from Figma: rounded-43px, shadow 0 0 16px rgba(0,0,0,0.12)) -->
+  <div class="search-bar">
+    <div class="search-bar-inner" onclick="location.href='search.html'">
+      <div class="search-left">
+        <span class="search-icon">🔍</span>
+        <div>
+          <div class="search-text-main">Find Your Home</div>
+          <div class="search-text-sub" id="search-summary">Manchester · Any time · 10 or 12 months</div>
+        </div>
+      </div>
+      <button class="filter-btn">⚙︎</button>
+    </div>
+  </div>
+
+  <!-- Category tabs -->
+  <div class="categories">
+    <div class="category-item active" data-type="All" onclick="filterListings('All', this)">
+      <span class="category-icon">🏠</span>All
+    </div>
+    <div class="category-item" data-type="Studio" onclick="filterListings('Studio', this)">
+      <span class="category-icon">🛏</span>Studio
+    </div>
+    <div class="category-item" data-type="1 Bed" onclick="filterListings('1 Bed', this)">
+      <span class="category-icon">🛋</span>1 Bed
+    </div>
+    <div class="category-item" data-type="2 Bed" onclick="filterListings('2 Bed', this)">
+      <span class="category-icon">🪑</span>2 Bed
+    </div>
+    <div class="category-item" data-type="3 Bed" onclick="filterListings('3 Bed', this)">
+      <span class="category-icon">🏡</span>3 Bed
+    </div>
+    <div class="category-item" data-type="Furnished" onclick="filterListings('Furnished', this)">
+      <span class="category-icon">✨</span>Furnished
+    </div>
+  </div>
+
+  <!-- Listings -->
+  <div class="listings" id="listings-container">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Map button -->
+  <button class="map-btn">🗺 Map</button>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item active" href="index.html">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Browse</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">🤍</span>
+      <span class="nav-label">Saved</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Enquiries</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Messages</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  // Live clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateClock();
+  setInterval(updateClock, 60000);
+
+  // Load search params
+  const params = new URLSearchParams(localStorage.getItem('searchParams') || '');
+  const startMonth = localStorage.getItem('startMonth');
+  const tenure = localStorage.getItem('tenure');
+  if (startMonth || tenure) {
+    const parts = [];
+    if (startMonth) parts.push('From ' + startMonth);
+    if (tenure) parts.push(tenure + ' months');
+    document.getElementById('search-summary').textContent =
+      'Manchester · ' + (parts.join(' · ') || 'Any time');
+  }
+</script>
+</body>
+</html>

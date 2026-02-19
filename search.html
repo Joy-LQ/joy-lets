@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Search · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time" id="clock">9:41</span>
+    <span class="icons">▲ WiFi 🔋</span>
+  </div>
+
+  <!-- Header -->
+  <div class="page-header">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="page-title">Search</span>
+  </div>
+
+  <!-- Start Date -->
+  <div class="filter-section">
+    <div class="filter-section-title">When would you like to move in?</div>
+    <div class="month-grid" id="month-grid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Tenure -->
+  <div class="filter-section">
+    <div class="filter-section-title">How long is your lease?</div>
+    <div class="tenure-options">
+      <div class="tenure-option" id="tenure-10" onclick="selectTenure(10)">
+        <div>
+          <div class="tenure-title">10 Months</div>
+          <div class="tenure-desc">Fixed term · ends before Christmas</div>
+        </div>
+        <span class="tenure-check" id="check-10"></span>
+      </div>
+      <div class="tenure-option" id="tenure-12" onclick="selectTenure(12)">
+        <div>
+          <div class="tenure-title">12 Months</div>
+          <div class="tenure-desc">Standard AST · full year tenancy</div>
+        </div>
+        <span class="tenure-check" id="check-12"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply -->
+  <button class="apply-btn" onclick="applySearch()">Show properties</button>
+
+</div>
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateClock();
+
+  // Generate next 8 months
+  const months = [];
+  const now = new Date();
+  for (let i = 0; i < 8; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    months.push({
+      label: d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }),
+      value: d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    });
+  }
+  const grid = document.getElementById('month-grid');
+  let selectedMonth = localStorage.getItem('startMonth') || null;
+  let selectedTenure = parseInt(localStorage.getItem('tenure')) || null;
+
+  months.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'month-btn' + (selectedMonth === m.value ? ' selected' : '');
+    btn.textContent = m.label;
+    btn.onclick = () => {
+      selectedMonth = m.value;
+      document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    grid.appendChild(btn);
+  });
+
+  function selectTenure(months) {
+    selectedTenure = months;
+    document.querySelectorAll('.tenure-option').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.tenure-check').forEach(el => el.textContent = '');
+    document.getElementById('tenure-' + months).classList.add('selected');
+    document.getElementById('check-' + months).textContent = '✓';
+  }
+
+  // Restore saved tenure
+  if (selectedTenure) selectTenure(selectedTenure);
+
+  function applySearch() {
+    if (selectedMonth) localStorage.setItem('startMonth', selectedMonth);
+    if (selectedTenure) localStorage.setItem('tenure', selectedTenure);
+    location.href = 'index.html';
+  }
+</script>
+</body>
+</html>

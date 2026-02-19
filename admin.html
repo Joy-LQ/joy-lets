@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Admin · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .admin-header {
+      background: var(--neutral-100);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-header h1 { font-size: 16px; font-weight: 600; }
+    .admin-header span { font-size: 13px; color: #aaa; }
+
+    .admin-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--neutral-40);
+      background: white;
+    }
+    .admin-tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--neutral-70);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .admin-tab.active {
+      color: var(--neutral-100);
+      border-bottom-color: var(--neutral-100);
+    }
+
+    .admin-section { display: none; padding: 20px 24px 100px; }
+    .admin-section.active { display: block; }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--neutral-80);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--neutral-40);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+      font-family: inherit;
+      background: white;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--neutral-100);
+    }
+    .form-textarea { height: 80px; resize: none; }
+
+    .photo-upload-area {
+      border: 2px dashed var(--neutral-40);
+      border-radius: 12px;
+      padding: 32px 16px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+    .photo-upload-area:hover { border-color: var(--neutral-100); }
+    .photo-upload-area.dragover { border-color: var(--primary); background: #fff5f7; }
+    .upload-icon { font-size: 40px; margin-bottom: 8px; }
+    .upload-text { font-size: 14px; color: var(--neutral-70); }
+    .upload-text strong { color: var(--neutral-100); }
+
+    .photo-previews {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .photo-preview {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      background: var(--neutral-20);
+    }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-preview .remove-photo {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-progress {
+      font-size: 12px;
+      color: var(--neutral-70);
+      margin-bottom: 8px;
+    }
+
+    .save-btn {
+      width: 100%;
+      background: var(--neutral-100);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Listing management */
+    .manage-card {
+      border: 1px solid var(--neutral-40);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .manage-card-photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: var(--neutral-20);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+    .manage-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .manage-card-info { flex: 1; min-width: 0; }
+    .manage-card-title { font-size: 14px; font-weight: 600; color: var(--neutral-100); }
+    .manage-card-sub { font-size: 13px; color: var(--neutral-70); margin-top: 2px; }
+    .manage-card-price { font-size: 14px; font-weight: 600; color: var(--neutral-100); margin-top: 6px; }
+    .manage-card-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-edit {
+      font-size: 12px;
+      padding: 5px 12px;
+      border: 1px solid var(--neutral-40);
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+    }
+    .btn-delete {
+      font-size: 12px;
+      padding: 5px 12px;
+      border: 1px solid #ffcdd2;
+      border-radius: 6px;
+      background: #fff5f5;
+      color: #c0392b;
+      cursor: pointer;
+    }
+
+    .amenity-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .amenity-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--neutral-80);
+      cursor: pointer;
+    }
+    .amenity-check input { width: 16px; height: 16px; }
+
+    .success-toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a8a4a;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 300;
+      pointer-events: none;
+    }
+    .success-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="admin-header">
+    <h1>Joy Lets · Admin</h1>
+    <span>Manchester</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <div class="admin-tab active" onclick="switchTab('add')">＋ Add Property</div>
+    <div class="admin-tab" onclick="switchTab('manage')">🏠 Manage</div>
+  </div>
+
+  <!-- Add Property -->
+  <div class="admin-section active" id="tab-add">
+
+    <label class="form-label">Property Address *</label>
+    <input class="form-input" id="f-title" placeholder="e.g. Flat 3, 12 Piccadilly, Manchester">
+
+    <label class="form-label">Type *</label>
+    <select class="form-select" id="f-type">
+      <option value="">Select type</option>
+      <option>Studio</option>
+      <option>1 Bed</option>
+      <option>2 Bed</option>
+      <option>3 Bed</option>
+    </select>
+
+    <label class="form-label">Monthly Rent (£) *</label>
+    <input class="form-input" id="f-price" type="number" placeholder="e.g. 950">
+
+    <label class="form-label">Available From *</label>
+    <input class="form-input" id="f-avail" type="date">
+
+    <label class="form-label">Short Description</label>
+    <textarea class="form-textarea" id="f-desc" placeholder="e.g. Bright and modern flat, recently refurbished..."></textarea>
+
+    <label class="form-label">Amenities</label>
+    <div class="amenity-checkboxes">
+      <label class="amenity-check"><input type="checkbox" value="WiFi"> WiFi</label>
+      <label class="amenity-check"><input type="checkbox" value="Washing Machine"> Washing Machine</label>
+      <label class="amenity-check"><input type="checkbox" value="Dishwasher"> Dishwasher</label>
+      <label class="amenity-check"><input type="checkbox" value="Central Heating"> Central Heating</label>
+      <label class="amenity-check"><input type="checkbox" value="Parking"> Parking</label>
+      <label class="amenity-check"><input type="checkbox" value="Garden"> Garden</label>
+      <label class="amenity-check"><input type="checkbox" value="Double Glazing"> Double Glazing</label>
+      <label class="amenity-check"><input type="checkbox" value="Bills Included"> Bills Included</label>
+    </div>
+
+    <label class="form-label">Photos</label>
+    <div class="photo-upload-area" id="upload-area" onclick="document.getElementById('photo-input').click()">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text"><strong>Tap to upload photos</strong><br>JPG, PNG up to 10MB each</div>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)">
+    <div class="upload-progress" id="upload-status"></div>
+    <div class="photo-previews" id="photo-previews"></div>
+
+    <button class="save-btn" id="save-btn" onclick="saveListing()">Save Property</button>
+  </div>
+
+  <!-- Manage -->
+  <div class="admin-section" id="tab-manage">
+    <div id="manage-list">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">👁</span>
+      <span class="nav-label">Preview</span>
+    </a>
+    <a class="nav-item active" href="admin.html">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Admin</span>
+    </a>
+  </nav>
+
+  <div class="success-toast" id="toast">✓ Saved successfully!</div>
+</div>
+
+<script>
+  // Cloudinary config
+  const CLOUD_NAME = 'du6lliisx';
+  const UPLOAD_PRESET = 'Man-Live app';
+
+  let uploadedUrls = [];
+
+  function switchTab(tab) {
+    document.querySelectorAll('.admin-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'add') || (i === 1 && tab === 'manage'));
+    });
+    document.getElementById('tab-add').classList.toggle('active', tab === 'add');
+    document.getElementById('tab-manage').classList.toggle('active', tab === 'manage');
+    if (tab === 'manage') renderManage();
+  }
+
+  async function uploadToCloudinary(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.secure_url;
+  }
+
+  async function handleFiles(files) {
+    const status = document.getElementById('upload-status');
+    const previews = document.getElementById('photo-previews');
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      status.textContent = `Uploading ${i + 1} of ${files.length}...`;
+
+      try {
+        const url = await uploadToCloudinary(file);
+        uploadedUrls.push(url);
+
+        const div = document.createElement('div');
+        div.className = 'photo-preview';
+        const idx = uploadedUrls.length - 1;
+        div.innerHTML = `
+          <img src="${url}" alt="photo">
+          <button class="remove-photo" onclick="removePhoto(${idx}, this.parentElement)">✕</button>
+        `;
+        previews.appendChild(div);
+      } catch (e) {
+        status.textContent = `Error uploading ${file.name}: ${e.message}`;
+      }
+    }
+    status.textContent = uploadedUrls.length > 0 ? `${uploadedUrls.length} photo(s) uploaded ✓` : '';
+    btn.disabled = false;
+  }
+
+  function removePhoto(idx, el) {
+    uploadedUrls.splice(idx, 1);
+    el.remove();
+  }
+
+  function saveListing() {
+    const title = document.getElementById('f-title').value.trim();
+    const type = document.getElementById('f-type').value;
+    const price = parseInt(document.getElementById('f-price').value);
+    const avail = document.getElementById('f-avail').value;
+    const desc = document.getElementById('f-desc').value.trim();
+
+    if (!title || !type || !price || !avail) {
+      alert('Please fill in all required fields (*)');
+      return;
+    }
+
+    const amenities = [];
+    document.querySelectorAll('.amenity-check input:checked').forEach(cb => {
+      amenities.push(cb.value);
+    });
+
+    const listings = JSON.parse(localStorage.getItem('listings') || '[]');
+    const newListing = {
+      id: Date.now().toString(),
+      title, type, price, description: desc || type + ' apartment in Manchester',
+      available: avail, rating: 5.0, reviews: 0,
+      photos: [...uploadedUrls],
+      amenities,
+      furnished: amenities.includes('Furnished') || true,
+      bills: amenities.includes('Bills Included')
+    };
+    listings.push(newListing);
+    localStorage.setItem('listings', JSON.stringify(listings));
+
+    // Reset form
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-type').value = '';
+    document.getElementById('f-price').value = '';
+    document.getElementById('f-avail').value = '';
+    document.getElementById('f-desc').value = '';
+    document.querySelectorAll('.amenity-check input').forEach(cb => cb.checked = false);
+    document.getElementById('photo-previews').innerHTML = '';
+    document.getElementById('upload-status').textContent = '';
+    uploadedUrls = [];
+
+    showToast('Property saved!');
+  }
+
+  function renderManage() {
+    const list = document.getElementById('manage-list');
+    const listings = JSON.parse(localStorage.getItem('listings') || '[]');
+
+    if (listings.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--neutral-70)">No properties yet.<br>Add one in the ＋ tab.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    listings.forEach((l, idx) => {
+      const card = document.createElement('div');
+      card.className = 'manage-card';
+      const photoEl = l.photos && l.photos.length > 0
+        ? `<img src="${l.photos[0]}" alt="">`
+        : '🏠';
+      card.innerHTML = `
+        <div class="manage-card-photo">${l.photos && l.photos.length > 0 ? '<img src="' + l.photos[0] + '">' : '🏠'}</div>
+        <div class="manage-card-info">
+          <div class="manage-card-title">${l.title}</div>
+          <div class="manage-card-sub">${l.type} · Available ${new Date(l.available).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>
+          <div class="manage-card-price">£${l.price.toLocaleString()}/mo</div>
+          <div class="manage-card-actions">
+            <button class="btn-delete" onclick="deleteListing(${idx})">Delete</button>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function deleteListing(idx) {
+    if (!confirm('Delete this property?')) return;
+    const listings = JSON.parse(localStorage.getItem('listings') || '[]');
+    listings.splice(idx, 1);
+    localStorage.setItem('listings', JSON.stringify(listings));
+    renderManage();
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = '✓ ' + msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "listings": [
+    {
+      "id": "1",
+      "title": "Ancoats, Manchester",
+      "description": "Modern studio apartment",
+      "type": "Studio",
+      "bedrooms": 0,
+      "price": 850,
+      "available": "2026-03-01",
+      "rating": 4.9,
+      "reviews": 12,
+      "photos": [],
+      "amenities": ["WiFi", "Washing Machine", "Central Heating", "Double Glazing"],
+      "furnished": true,
+      "bills": false
+    },
+    {
+      "id": "2",
+      "title": "Northern Quarter, Manchester",
+      "description": "Stylish 1-bed flat",
+      "type": "1 Bed",
+      "bedrooms": 1,
+      "price": 1100,
+      "available": "2026-03-15",
+      "rating": 4.8,
+      "reviews": 8,
+      "photos": [],
+      "amenities": ["WiFi", "Washing Machine", "Dishwasher", "Central Heating"],
+      "furnished": true,
+      "bills": false
+    },
+    {
+      "id": "3",
+      "title": "Salford, Manchester",
+      "description": "Spacious 2-bed apartment",
+      "type": "2 Bed",
+      "bedrooms": 2,
+      "price": 1450,
+      "available": "2026-04-01",
+      "rating": 4.7,
+      "reviews": 15,
+      "photos": [],
+      "amenities": ["WiFi", "Parking", "Garden", "Central Heating"],
+      "furnished": true,
+      "bills": false
+    },
+    {
+      "id": "4",
+      "title": "Chorlton, Manchester",
+      "description": "Bright 1-bed with garden",
+      "type": "1 Bed",
+      "bedrooms": 1,
+      "price": 1050,
+      "available": "2026-03-01",
+      "rating": 4.9,
+      "reviews": 6,
+      "photos": [],
+      "amenities": ["WiFi", "Garden", "Washing Machine", "Central Heating"],
+      "furnished": true,
+      "bills": false
+    }
+  ]
+}

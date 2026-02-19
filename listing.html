@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=375px, initial-scale=1.0">
+  <title>Property · Joy Lets</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Photo -->
+  <div class="detail-photos">
+    <div class="detail-photo-placeholder" id="detail-photo">🏠</div>
+    <button class="detail-back" onclick="history.back()">←</button>
+  </div>
+
+  <!-- Content -->
+  <div class="detail-content">
+    <div class="detail-title" id="detail-title">—</div>
+    <div class="detail-type" id="detail-type">—</div>
+    <div class="detail-rating">
+      ⭐ <span id="detail-rating">—</span>
+      <span style="color:var(--neutral-70)" id="detail-reviews"></span>
+    </div>
+
+    <hr class="detail-divider">
+
+    <div class="detail-section-title">About this property</div>
+    <div style="font-size:14px;color:var(--neutral-70);line-height:22px" id="detail-desc">—</div>
+
+    <hr class="detail-divider">
+
+    <div class="detail-section-title">Rent</div>
+    <div class="detail-price-row">
+      <div class="detail-price" id="detail-price">—</div>
+      <div class="detail-price-unit">/month</div>
+    </div>
+    <div style="font-size:13px;color:var(--neutral-70);margin-top:4px">Bills not included</div>
+
+    <hr class="detail-divider">
+
+    <div class="detail-section-title">Available from</div>
+    <div style="font-size:14px;color:var(--neutral-100)" id="detail-avail">—</div>
+
+    <hr class="detail-divider">
+
+    <div class="detail-section-title">Amenities</div>
+    <div class="amenity-list" id="detail-amenities"></div>
+
+    <hr class="detail-divider">
+
+    <div class="detail-section-title">Tenancy</div>
+    <div style="font-size:14px;color:var(--neutral-70);line-height:22px">
+      Available as 10-month or 12-month Assured Shorthold Tenancy.<br>
+      All viewings arranged via Joy Lets.
+    </div>
+  </div>
+
+  <!-- Enquire bar -->
+  <div class="enquire-bar">
+    <div>
+      <div class="enquire-price">£<span id="bar-price">—</span> <span>/mo</span></div>
+    </div>
+    <button class="enquire-btn" onclick="openEnquiry()">Enquire Now</button>
+  </div>
+
+</div>
+
+<!-- Enquiry Modal -->
+<div class="modal-overlay" id="modal" onclick="closeIfOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Send an Enquiry</div>
+    <input type="text" placeholder="Your name" id="enq-name">
+    <input type="tel" placeholder="Phone number" id="enq-phone">
+    <input type="email" placeholder="Email address" id="enq-email">
+    <textarea placeholder="Any questions or preferred viewing times?" id="enq-msg"></textarea>
+    <button class="modal-submit" onclick="submitEnquiry()">Send Message</button>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  fetch('data/listings.json')
+    .then(r => r.json())
+    .then(data => {
+      const listing = data.listings.find(l => l.id === id);
+      if (!listing) return;
+      document.title = listing.title + ' · Joy Lets';
+      document.getElementById('detail-title').textContent = listing.title;
+      document.getElementById('detail-type').textContent = listing.type + (listing.furnished ? ' · Furnished' : '');
+      document.getElementById('detail-rating').textContent = listing.rating;
+      document.getElementById('detail-reviews').textContent = '(' + listing.reviews + ' reviews)';
+      document.getElementById('detail-desc').textContent = listing.description + ' — a well-presented property in Manchester, ideal for professionals or students.';
+      document.getElementById('detail-price').textContent = '£' + listing.price.toLocaleString();
+      document.getElementById('bar-price').textContent = listing.price.toLocaleString();
+      document.getElementById('detail-avail').textContent =
+        new Date(listing.available).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+      const amenDiv = document.getElementById('detail-amenities');
+      listing.amenities.forEach(a => {
+        const tag = document.createElement('div');
+        tag.className = 'amenity-tag';
+        tag.textContent = a;
+        amenDiv.appendChild(tag);
+      });
+    });
+
+  function openEnquiry() {
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeIfOutside(e) {
+    if (e.target === document.getElementById('modal'))
+      document.getElementById('modal').classList.remove('open');
+  }
+  function submitEnquiry() {
+    const name = document.getElementById('enq-name').value;
+    if (!name) { alert('Please enter your name'); return; }
+    document.getElementById('modal').classList.remove('open');
+    alert('Thank you ' + name + '! We\'ll be in touch shortly.');
+  }
+</script>
+</body>
+</html>
