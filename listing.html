@@ -131,7 +131,10 @@
   fetch('data/listings.json')
     .then(r => r.json())
     .then(data => {
-      const listing = data.listings.find(l => l.id === id);
+      const local = JSON.parse(localStorage.getItem('listings') || '[]');
+      const localIds = new Set(local.map(l => l.id));
+      const all = [...local, ...data.listings.filter(l => !localIds.has(l.id))];
+      const listing = all.find(l => l.id === id);
       if (!listing) return;
       document.title = listing.title + ' · Joy Lets';
 

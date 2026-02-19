@@ -21,6 +21,9 @@
       display: flex;
       border-bottom: 1px solid var(--neutral-40);
       background: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .admin-tab {
       flex: 1;
@@ -38,7 +41,7 @@
       border-bottom-color: var(--neutral-100);
     }
 
-    .admin-section { display: none; padding: 20px 24px 100px; }
+    .admin-section { display: none; padding: 20px 24px 140px; }
     .admin-section.active { display: block; }
 
     .form-label {
@@ -58,11 +61,14 @@
       outline: none;
       font-family: inherit;
       background: white;
+      box-sizing: border-box;
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus {
       border-color: var(--neutral-100);
     }
     .form-textarea { height: 80px; resize: none; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-input, .form-row .form-select { flex: 1; }
 
     .photo-upload-area {
       border: 2px dashed var(--neutral-40);
@@ -74,7 +80,6 @@
       transition: all 0.2s;
     }
     .photo-upload-area:hover { border-color: var(--neutral-100); }
-    .photo-upload-area.dragover { border-color: var(--primary); background: #fff5f7; }
     .upload-icon { font-size: 40px; margin-bottom: 8px; }
     .upload-text { font-size: 14px; color: var(--neutral-70); }
     .upload-text strong { color: var(--neutral-100); }
@@ -95,30 +100,20 @@
     .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
     .photo-preview .remove-photo {
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: 4px; right: 4px;
       background: rgba(0,0,0,0.6);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       font-size: 11px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
     }
-    .upload-progress {
-      font-size: 12px;
-      color: var(--neutral-70);
-      margin-bottom: 8px;
-    }
+    .upload-progress { font-size: 12px; color: var(--neutral-70); margin-bottom: 8px; }
 
-    .save-btn {
+    .action-btn {
       width: 100%;
-      background: var(--neutral-100);
-      color: white;
       border: none;
       border-radius: 8px;
       padding: 16px;
@@ -127,53 +122,9 @@
       cursor: pointer;
       margin-top: 8px;
     }
-    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* Listing management */
-    .manage-card {
-      border: 1px solid var(--neutral-40);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .manage-card-photo {
-      width: 72px;
-      height: 72px;
-      border-radius: 8px;
-      background: var(--neutral-20);
-      overflow: hidden;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-    }
-    .manage-card-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .manage-card-info { flex: 1; min-width: 0; }
-    .manage-card-title { font-size: 14px; font-weight: 600; color: var(--neutral-100); }
-    .manage-card-sub { font-size: 13px; color: var(--neutral-70); margin-top: 2px; }
-    .manage-card-price { font-size: 14px; font-weight: 600; color: var(--neutral-100); margin-top: 6px; }
-    .manage-card-actions { display: flex; gap: 8px; margin-top: 8px; }
-    .btn-edit {
-      font-size: 12px;
-      padding: 5px 12px;
-      border: 1px solid var(--neutral-40);
-      border-radius: 6px;
-      background: white;
-      cursor: pointer;
-    }
-    .btn-delete {
-      font-size: 12px;
-      padding: 5px 12px;
-      border: 1px solid #ffcdd2;
-      border-radius: 6px;
-      background: #fff5f5;
-      color: #c0392b;
-      cursor: pointer;
-    }
+    .action-btn.primary { background: var(--neutral-100); color: white; }
+    .action-btn.secondary { background: var(--neutral-20); color: var(--neutral-100); }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .amenity-checkboxes {
       display: grid;
@@ -191,63 +142,178 @@
     }
     .amenity-check input { width: 16px; height: 16px; }
 
+    /* Status badge */
+    .status-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .status-opt {
+      flex: 1;
+      text-align: center;
+      padding: 10px 6px;
+      border-radius: 8px;
+      border: 1.5px solid var(--neutral-40);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .status-opt.active-status { border-color: #1a8a4a; background: #f0fff6; color: #1a8a4a; font-weight: 600; }
+    .status-opt.rented-status { border-color: #e67e22; background: #fff8f0; color: #e67e22; font-weight: 600; }
+    .status-opt.unlisted-status { border-color: var(--neutral-70); background: var(--neutral-20); color: var(--neutral-70); font-weight: 600; }
+
+    /* Manage cards */
+    .manage-card {
+      border: 1px solid var(--neutral-40);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .manage-card.rented { border-color: #f0a500; background: #fffdf5; }
+    .manage-card.unlisted { opacity: 0.55; }
+    .manage-card-photo {
+      width: 72px; height: 72px;
+      border-radius: 8px;
+      background: var(--neutral-20);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .manage-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .manage-card-info { flex: 1; min-width: 0; }
+    .manage-card-title { font-size: 14px; font-weight: 600; color: var(--neutral-100); }
+    .manage-card-sub { font-size: 13px; color: var(--neutral-70); margin-top: 2px; }
+    .manage-card-price { font-size: 14px; font-weight: 600; color: var(--neutral-100); margin-top: 4px; }
+    .manage-card-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-edit {
+      font-size: 12px; padding: 5px 12px;
+      border: 1px solid var(--neutral-40);
+      border-radius: 6px; background: white; cursor: pointer;
+    }
+    .btn-delete {
+      font-size: 12px; padding: 5px 12px;
+      border: 1px solid #ffcdd2;
+      border-radius: 6px; background: #fff5f5; color: #c0392b; cursor: pointer;
+    }
+    .status-badge {
+      font-size: 11px; padding: 3px 8px;
+      border-radius: 20px; font-weight: 600;
+    }
+    .status-badge.active { background: #e8f8ee; color: #1a8a4a; }
+    .status-badge.rented { background: #fff3e0; color: #e67e22; }
+    .status-badge.unlisted { background: var(--neutral-20); color: var(--neutral-70); }
+
+    .source-badge {
+      font-size: 10px; padding: 2px 6px;
+      border-radius: 10px;
+      background: var(--neutral-20);
+      color: var(--neutral-70);
+      margin-left: 6px;
+    }
+
+    .export-box {
+      background: var(--neutral-20);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .export-box-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .export-box-desc { font-size: 12px; color: var(--neutral-70); line-height: 18px; }
+
     .success-toast {
       position: fixed;
-      bottom: 100px;
-      left: 50%;
+      bottom: 100px; left: 50%;
       transform: translateX(-50%);
       background: #1a8a4a;
       color: white;
       padding: 12px 24px;
       border-radius: 24px;
-      font-size: 14px;
-      font-weight: 500;
-      opacity: 0;
-      transition: opacity 0.3s;
-      z-index: 300;
-      pointer-events: none;
+      font-size: 14px; font-weight: 500;
+      opacity: 0; transition: opacity 0.3s;
+      z-index: 300; pointer-events: none;
     }
     .success-toast.show { opacity: 1; }
+
+    .edit-mode-banner {
+      background: #fff8e1;
+      border: 1px solid #f0c040;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #7a5c00;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .edit-mode-banner.show { display: block; }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Header -->
   <div class="admin-header">
     <h1>Joy Lets · Admin</h1>
     <span>Manchester</span>
   </div>
 
-  <!-- Tabs -->
   <div class="admin-tabs">
     <div class="admin-tab active" onclick="switchTab('add')">＋ Add Property</div>
     <div class="admin-tab" onclick="switchTab('manage')">🏠 Manage</div>
   </div>
 
-  <!-- Add Property -->
+  <!-- Add / Edit Property -->
   <div class="admin-section active" id="tab-add">
+
+    <div class="edit-mode-banner" id="edit-banner">
+      ✏️ Editing existing property — <a href="#" onclick="cancelEdit()" style="color:#7a5c00;text-decoration:underline">Cancel</a>
+    </div>
 
     <label class="form-label">Property Address *</label>
     <input class="form-input" id="f-title" placeholder="e.g. Flat 3, 12 Piccadilly, Manchester">
 
-    <label class="form-label">Type *</label>
-    <select class="form-select" id="f-type">
-      <option value="">Select type</option>
-      <option>Studio</option>
-      <option>1 Bed</option>
-      <option>2 Bed</option>
-      <option>3 Bed</option>
-    </select>
+    <div class="form-row">
+      <div>
+        <label class="form-label">Type *</label>
+        <select class="form-select" id="f-type">
+          <option value="">Select type</option>
+          <option>Studio</option>
+          <option>1 Bed</option>
+          <option>2 Bed</option>
+          <option>3 Bed</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Postcode</label>
+        <input class="form-input" id="f-postcode" placeholder="e.g. M14">
+      </div>
+    </div>
 
-    <label class="form-label">Monthly Rent (£) *</label>
-    <input class="form-input" id="f-price" type="number" placeholder="e.g. 950">
+    <div class="form-row">
+      <div>
+        <label class="form-label">Monthly Rent (£) *</label>
+        <input class="form-input" id="f-price" type="number" placeholder="e.g. 950">
+      </div>
+      <div>
+        <label class="form-label">Max Tenants</label>
+        <input class="form-input" id="f-tenants" type="number" placeholder="e.g. 2">
+      </div>
+    </div>
 
     <label class="form-label">Available From *</label>
     <input class="form-input" id="f-avail" type="date">
 
     <label class="form-label">Short Description</label>
     <textarea class="form-textarea" id="f-desc" placeholder="e.g. Bright and modern flat, recently refurbished..."></textarea>
+
+    <label class="form-label">Status</label>
+    <div class="status-selector">
+      <div class="status-opt active-status" id="s-active" onclick="selectStatus('active')">✓ Active</div>
+      <div class="status-opt" id="s-rented" onclick="selectStatus('rented')">🔑 Rented</div>
+      <div class="status-opt" id="s-unlisted" onclick="selectStatus('unlisted')">👁 Unlisted</div>
+    </div>
 
     <label class="form-label">Amenities</label>
     <div class="amenity-checkboxes">
@@ -259,6 +325,7 @@
       <label class="amenity-check"><input type="checkbox" value="Garden"> Garden</label>
       <label class="amenity-check"><input type="checkbox" value="Double Glazing"> Double Glazing</label>
       <label class="amenity-check"><input type="checkbox" value="Bills Included"> Bills Included</label>
+      <label class="amenity-check"><input type="checkbox" value="Furnished"> Furnished</label>
     </div>
 
     <label class="form-label">Photos</label>
@@ -270,17 +337,21 @@
     <div class="upload-progress" id="upload-status"></div>
     <div class="photo-previews" id="photo-previews"></div>
 
-    <button class="save-btn" id="save-btn" onclick="saveListing()">Save Property</button>
+    <button class="action-btn primary" id="save-btn" onclick="saveListing()">Save Property</button>
   </div>
 
   <!-- Manage -->
   <div class="admin-section" id="tab-manage">
-    <div id="manage-list">
-      <!-- populated by JS -->
+
+    <div class="export-box">
+      <div class="export-box-title">📤 Publish to Live Site</div>
+      <div class="export-box-desc">Your changes are saved locally. To make them visible to tenants, tap below to copy the JSON and send it to your developer.</div>
+      <button class="action-btn secondary" style="margin-top:12px" onclick="exportJSON()">Copy JSON to Clipboard</button>
     </div>
+
+    <div id="manage-list"></div>
   </div>
 
-  <!-- Bottom Nav -->
   <nav class="bottom-nav">
     <a class="nav-item" href="index.html">
       <span class="nav-icon">👁</span>
@@ -292,15 +363,17 @@
     </a>
   </nav>
 
-  <div class="success-toast" id="toast">✓ Saved successfully!</div>
+  <div class="success-toast" id="toast"></div>
 </div>
 
 <script>
-  // Cloudinary config
   const CLOUD_NAME = 'du6lliisx';
   const UPLOAD_PRESET = 'Man-Live app';
 
   let uploadedUrls = [];
+  let existingPhotos = [];
+  let editingId = null;
+  let selectedStatus = 'active';
 
   function switchTab(tab) {
     document.querySelectorAll('.admin-tab').forEach((t, i) => {
@@ -311,13 +384,20 @@
     if (tab === 'manage') renderManage();
   }
 
+  function selectStatus(s) {
+    selectedStatus = s;
+    ['active','rented','unlisted'].forEach(x => {
+      const el = document.getElementById('s-' + x);
+      el.className = 'status-opt' + (x === s ? ' ' + x + '-status' : '');
+    });
+  }
+
   async function uploadToCloudinary(file) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
     const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-      method: 'POST',
-      body: formData
+      method: 'POST', body: formData
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
@@ -331,13 +411,10 @@
     btn.disabled = true;
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
       status.textContent = `Uploading ${i + 1} of ${files.length}...`;
-
       try {
-        const url = await uploadToCloudinary(file);
+        const url = await uploadToCloudinary(files[i]);
         uploadedUrls.push(url);
-
         const div = document.createElement('div');
         div.className = 'photo-preview';
         const idx = uploadedUrls.length - 1;
@@ -347,7 +424,7 @@
         `;
         previews.appendChild(div);
       } catch (e) {
-        status.textContent = `Error uploading ${file.name}: ${e.message}`;
+        status.textContent = `Error: ${e.message}`;
       }
     }
     status.textContent = uploadedUrls.length > 0 ? `${uploadedUrls.length} photo(s) uploaded ✓` : '';
@@ -365,6 +442,8 @@
     const price = parseInt(document.getElementById('f-price').value);
     const avail = document.getElementById('f-avail').value;
     const desc = document.getElementById('f-desc').value.trim();
+    const postcode = document.getElementById('f-postcode').value.trim().toUpperCase();
+    const maxTenants = parseInt(document.getElementById('f-tenants').value) || 2;
 
     if (!title || !type || !price || !avail) {
       alert('Please fill in all required fields (*)');
@@ -372,61 +451,101 @@
     }
 
     const amenities = [];
-    document.querySelectorAll('.amenity-check input:checked').forEach(cb => {
-      amenities.push(cb.value);
-    });
+    document.querySelectorAll('.amenity-check input:checked').forEach(cb => amenities.push(cb.value));
 
     const listings = JSON.parse(localStorage.getItem('listings') || '[]');
-    const newListing = {
-      id: Date.now().toString(),
-      title, type, price, description: desc || type + ' apartment in Manchester',
-      available: avail, rating: 5.0, reviews: 0,
-      photos: [...uploadedUrls],
-      amenities,
-      furnished: amenities.includes('Furnished') || true,
-      bills: amenities.includes('Bills Included')
-    };
-    listings.push(newListing);
-    localStorage.setItem('listings', JSON.stringify(listings));
 
-    // Reset form
+    const listingData = {
+      id: editingId || Date.now().toString(),
+      title, type, price,
+      postcode, maxTenants,
+      description: desc || type + ' apartment in Manchester',
+      available: avail,
+      rating: 5.0, reviews: 0,
+      photos: [...existingPhotos, ...uploadedUrls],
+      amenities,
+      furnished: amenities.includes('Furnished'),
+      bills: amenities.includes('Bills Included'),
+      status: selectedStatus
+    };
+
+    if (editingId) {
+      const idx = listings.findIndex(l => l.id === editingId);
+      if (idx !== -1) listings[idx] = listingData;
+      else listings.push(listingData);
+    } else {
+      listings.push(listingData);
+    }
+
+    localStorage.setItem('listings', JSON.stringify(listings));
+    resetForm();
+    showToast(editingId ? 'Property updated!' : 'Property saved!');
+    editingId = null;
+  }
+
+  function resetForm() {
     document.getElementById('f-title').value = '';
     document.getElementById('f-type').value = '';
     document.getElementById('f-price').value = '';
+    document.getElementById('f-postcode').value = '';
+    document.getElementById('f-tenants').value = '';
     document.getElementById('f-avail').value = '';
     document.getElementById('f-desc').value = '';
     document.querySelectorAll('.amenity-check input').forEach(cb => cb.checked = false);
     document.getElementById('photo-previews').innerHTML = '';
     document.getElementById('upload-status').textContent = '';
     uploadedUrls = [];
-
-    showToast('Property saved!');
+    existingPhotos = [];
+    selectStatus('active');
+    document.getElementById('save-btn').textContent = 'Save Property';
+    document.getElementById('edit-banner').classList.remove('show');
   }
 
-  function renderManage() {
-    const list = document.getElementById('manage-list');
-    const listings = JSON.parse(localStorage.getItem('listings') || '[]');
+  function cancelEdit() {
+    editingId = null;
+    resetForm();
+  }
 
-    if (listings.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--neutral-70)">No properties yet.<br>Add one in the ＋ tab.</div>';
+  async function renderManage() {
+    const list = document.getElementById('manage-list');
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--neutral-70)">Loading...</div>';
+
+    const res = await fetch('data/listings.json');
+    const data = await res.json();
+    const local = JSON.parse(localStorage.getItem('listings') || '[]');
+    const localIds = new Set(local.map(l => l.id));
+    const allListings = [...local, ...data.listings.filter(l => !localIds.has(l.id))];
+
+    if (allListings.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--neutral-70)">No properties yet.</div>';
       return;
     }
 
     list.innerHTML = '';
-    listings.forEach((l, idx) => {
+    allListings.forEach((l) => {
+      const isLocal = localIds.has(l.id);
+      const status = l.status || 'active';
       const card = document.createElement('div');
-      card.className = 'manage-card';
-      const photoEl = l.photos && l.photos.length > 0
-        ? `<img src="${l.photos[0]}" alt="">`
-        : '🏠';
+      card.className = 'manage-card ' + (status === 'rented' ? 'rented' : status === 'unlisted' ? 'unlisted' : '');
+
       card.innerHTML = `
         <div class="manage-card-photo">${l.photos && l.photos.length > 0 ? '<img src="' + l.photos[0] + '">' : '🏠'}</div>
         <div class="manage-card-info">
-          <div class="manage-card-title">${l.title}</div>
-          <div class="manage-card-sub">${l.type} · Available ${new Date(l.available).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div class="manage-card-title">${l.title}</div>
+            ${!isLocal ? '<span class="source-badge">JSON</span>' : ''}
+          </div>
+          <div class="manage-card-sub">${l.type} · ${new Date(l.available).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>
           <div class="manage-card-price">£${l.price.toLocaleString()}/mo</div>
+          <div style="margin-top:6px">
+            <span class="status-badge ${status}">${status === 'active' ? '✓ Active' : status === 'rented' ? '🔑 Rented' : '👁 Unlisted'}</span>
+          </div>
           <div class="manage-card-actions">
-            <button class="btn-delete" onclick="deleteListing(${idx})">Delete</button>
+            <button class="btn-edit" onclick="editListing('${l.id}')">✏️ Edit</button>
+            <button class="btn-edit" onclick="quickStatus('${l.id}', 'active')" style="color:#1a8a4a">Active</button>
+            <button class="btn-edit" onclick="quickStatus('${l.id}', 'rented')" style="color:#e67e22">Rented</button>
+            <button class="btn-edit" onclick="quickStatus('${l.id}', 'unlisted')" style="color:#999">Unlist</button>
+            ${isLocal ? `<button class="btn-delete" onclick="deleteListing('${l.id}')">Delete</button>` : ''}
           </div>
         </div>
       `;
@@ -434,12 +553,101 @@
     });
   }
 
-  function deleteListing(idx) {
-    if (!confirm('Delete this property?')) return;
+  async function editListing(id) {
+    const res = await fetch('data/listings.json');
+    const data = await res.json();
+    const local = JSON.parse(localStorage.getItem('listings') || '[]');
+    const localIds = new Set(local.map(l => l.id));
+    const all = [...local, ...data.listings.filter(l => !localIds.has(l.id))];
+    const l = all.find(x => x.id === id);
+    if (!l) return;
+
+    editingId = id;
+    switchTab('add');
+
+    document.getElementById('f-title').value = l.title || '';
+    document.getElementById('f-type').value = l.type || '';
+    document.getElementById('f-price').value = l.price || '';
+    document.getElementById('f-postcode').value = l.postcode || '';
+    document.getElementById('f-tenants').value = l.maxTenants || '';
+    document.getElementById('f-avail').value = l.available || '';
+    document.getElementById('f-desc').value = l.description || '';
+    selectStatus(l.status || 'active');
+
+    document.querySelectorAll('.amenity-check input').forEach(cb => {
+      cb.checked = l.amenities && l.amenities.includes(cb.value);
+    });
+
+    // Show existing photos
+    existingPhotos = [...(l.photos || [])];
+    uploadedUrls = [];
+    const previews = document.getElementById('photo-previews');
+    previews.innerHTML = '';
+    existingPhotos.forEach((url, i) => {
+      const div = document.createElement('div');
+      div.className = 'photo-preview';
+      div.innerHTML = `
+        <img src="${url}" alt="photo">
+        <button class="remove-photo" onclick="removeExistingPhoto(${i}, this.parentElement)">✕</button>
+      `;
+      previews.appendChild(div);
+    });
+
+    document.getElementById('save-btn').textContent = 'Update Property';
+    document.getElementById('edit-banner').classList.add('show');
+    window.scrollTo(0, 0);
+  }
+
+  function removeExistingPhoto(idx, el) {
+    existingPhotos.splice(idx, 1);
+    el.remove();
+  }
+
+  function quickStatus(id, status) {
     const listings = JSON.parse(localStorage.getItem('listings') || '[]');
-    listings.splice(idx, 1);
+    const idx = listings.findIndex(l => l.id === id);
+
+    if (idx !== -1) {
+      listings[idx].status = status;
+    } else {
+      // Copy from JSON to localStorage with new status
+      fetch('data/listings.json').then(r => r.json()).then(data => {
+        const l = data.listings.find(x => x.id === id);
+        if (l) {
+          const updated = { ...l, status };
+          listings.push(updated);
+          localStorage.setItem('listings', JSON.stringify(listings));
+          renderManage();
+          showToast('Status updated!');
+        }
+      });
+      return;
+    }
+
     localStorage.setItem('listings', JSON.stringify(listings));
     renderManage();
+    showToast('Status updated!');
+  }
+
+  function deleteListing(id) {
+    if (!confirm('Delete this property?')) return;
+    const listings = JSON.parse(localStorage.getItem('listings') || '[]');
+    const idx = listings.findIndex(l => l.id === id);
+    if (idx !== -1) listings.splice(idx, 1);
+    localStorage.setItem('listings', JSON.stringify(listings));
+    renderManage();
+  }
+
+  function exportJSON() {
+    fetch('data/listings.json').then(r => r.json()).then(data => {
+      const local = JSON.parse(localStorage.getItem('listings') || '[]');
+      const localIds = new Set(local.map(l => l.id));
+      const merged = [...local, ...data.listings.filter(l => !localIds.has(l.id))];
+      const json = JSON.stringify({ listings: merged }, null, 2);
+      navigator.clipboard.writeText(json).then(() => {
+        showToast('JSON copied! Send to developer to publish.');
+      });
+    });
   }
 
   function showToast(msg) {
