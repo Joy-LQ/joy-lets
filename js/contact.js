@@ -67,10 +67,18 @@ function closeContactSheet() {
 }
 
 function openWeChat() {
-  // Copy WeChat ID to clipboard and open WeChat app
+  const inWeChat = /MicroMessenger/i.test(navigator.userAgent);
   navigator.clipboard.writeText('manchester_room').catch(() => {});
-  document.getElementById('wechat-copied').style.display = 'block';
-  setTimeout(() => {
-    window.location.href = 'weixin://';
-  }, 800);
+  const tip = document.getElementById('wechat-copied');
+
+  if (inWeChat) {
+    // Already inside WeChat — just show copy tip
+    tip.innerHTML = '✓ 微信号已复制：<strong>manchester_room</strong><br>请直接搜索添加';
+    tip.style.display = 'block';
+  } else {
+    // External browser — copy + jump to WeChat app
+    tip.innerHTML = '✓ WeChat ID copied! Opening WeChat…';
+    tip.style.display = 'block';
+    setTimeout(() => { window.location.href = 'weixin://'; }, 800);
+  }
 }
