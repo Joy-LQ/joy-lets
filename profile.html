@@ -98,11 +98,6 @@
         <span class="contact-label">Phone</span>
         <span class="contact-value">+44 7510 757408</span>
       </a>
-      <a class="contact-row" href="#" onclick="openContactSheet()">
-        <span class="contact-icon">💬</span>
-        <span class="contact-label">WhatsApp / 微信</span>
-        <span class="contact-value">Message us</span>
-      </a>
       <a class="contact-row" href="mailto:hello@man-live.uk">
         <span class="contact-icon">✉️</span>
         <span class="contact-label">Email</span>
@@ -112,6 +107,20 @@
         <span class="contact-icon">🌐</span>
         <span class="contact-label">Website</span>
         <span class="contact-value">www.man-live.uk</span>
+      </a>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">Direct Contact</div>
+      <a class="contact-row" href="https://wa.me/447510757408" target="_blank">
+        <span class="contact-icon">💬</span>
+        <span class="contact-label">WhatsApp</span>
+        <span class="contact-value">+44 7510 757408 ›</span>
+      </a>
+      <a class="contact-row" href="#" onclick="openWeChat(); return false;">
+        <span class="contact-icon">🟢</span>
+        <span class="contact-label">WeChat 微信</span>
+        <span class="contact-value">manchester_room ›</span>
       </a>
     </div>
 
@@ -131,7 +140,7 @@
       <span class="nav-icon">📋</span>
       <span class="nav-label">Enquiries</span>
     </a>
-    <a class="nav-item" href="#" onclick="openContactSheet()">
+    <a class="nav-item" href="#" onclick="openJoyChat()">
       <span class="nav-icon">💬</span>
       <span class="nav-label">Messages</span>
     </a>
@@ -151,5 +160,7 @@
   updateClock();
 </script>
 <script src="js/contact.js"></script>
+<script>window.JOY_CHAT_CONFIG = { apiUrl: "https://chat.man-live.uk" }</script>
+<script src="js/chat-widget.js"></script>
 </body>
 </html>

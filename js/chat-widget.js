@@ -15,14 +15,8 @@
   const style = document.createElement("style");
   style.textContent = `
     #joy-chat-btn {
-      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-      width: 56px; height: 56px; border-radius: 50%;
-      background: #2d6a4f; color: white; font-size: 24px;
-      border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.2s;
+      display: none;  /* 由底部导航 Messages 按钮控制，不显示浮动按钮 */
     }
-    #joy-chat-btn:hover { transform: scale(1.1); }
 
     #joy-chat-box {
       position: fixed; bottom: 90px; right: 24px; z-index: 9998;
@@ -114,6 +108,10 @@
 
   btn.addEventListener("click", () => box.classList.toggle("open"));
   closeBtn.addEventListener("click", () => box.classList.remove("open"));
+
+  // 暴露给外部调用（底部导航 Messages 按钮用这个）
+  window.openJoyChat = () => box.classList.add("open");
+  window.closeJoyChat = () => box.classList.remove("open");
 
   function appendMsg(text, role) {
     const div = document.createElement("div");
