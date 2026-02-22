@@ -124,12 +124,22 @@
     } catch(e) {}
   }
 
+  function endSession() {
+    box.classList.remove("open");
+    history = [];
+    sessionStorage.removeItem(SESSION_KEY);
+    messages.innerHTML = `<div class="joy-msg bot">
+      你好！我是 Joy Lets 的 AI 客服 Ethan 🏠<br>
+      可以问我曼城租房相关的问题，或者告诉我你的需求，我来推荐合适的房源～
+    </div>`;
+  }
+
   btn.addEventListener("click", () => { box.classList.toggle("open"); saveSession(); });
-  closeBtn.addEventListener("click", () => { box.classList.remove("open"); saveSession(); });
+  closeBtn.addEventListener("click", endSession);
 
   // 暴露给外部调用（底部导航 Messages 按钮用这个）
   window.openJoyChat = () => { box.classList.add("open"); saveSession(); };
-  window.closeJoyChat = () => { box.classList.remove("open"); saveSession(); };
+  window.closeJoyChat = endSession;
 
   function appendMsg(text, role) {
     const div = document.createElement("div");
