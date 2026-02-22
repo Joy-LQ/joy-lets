@@ -104,14 +104,32 @@
   const input    = document.getElementById("joy-chat-input");
   const sendBtn  = document.getElementById("joy-chat-send");
 
-  let history = [];
+  const SESSION_KEY = "joy_chat_session";
 
-  btn.addEventListener("click", () => box.classList.toggle("open"));
-  closeBtn.addEventListener("click", () => box.classList.remove("open"));
+  // 从 sessionStorage 恢复状态
+  let session = {};
+  try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}"); } catch(e) {}
+  let history = session.history || [];
+
+  function saveSession() {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        open: box.classList.contains("open"),
+        history,
+        msgs: Array.from(messages.querySelectorAll(".joy-msg:not(.typing)")).map(el => ({
+          role: el.classList.contains("user") ? "user" : "bot",
+          html: el.innerHTML
+        }))
+      }));
+    } catch(e) {}
+  }
+
+  btn.addEventListener("click", () => { box.classList.toggle("open"); saveSession(); });
+  closeBtn.addEventListener("click", () => { box.classList.remove("open"); saveSession(); });
 
   // 暴露给外部调用（底部导航 Messages 按钮用这个）
-  window.openJoyChat = () => box.classList.add("open");
-  window.closeJoyChat = () => box.classList.remove("open");
+  window.openJoyChat = () => { box.classList.add("open"); saveSession(); };
+  window.closeJoyChat = () => { box.classList.remove("open"); saveSession(); };
 
   function appendMsg(text, role) {
     const div = document.createElement("div");
@@ -121,6 +139,21 @@
     messages.scrollTop = messages.scrollHeight;
     return div;
   }
+
+  // 恢复历史消息（如果有）
+  if (session.msgs && session.msgs.length > 0) {
+    messages.innerHTML = "";  // 清除默认欢迎语
+    session.msgs.forEach(m => {
+      const div = document.createElement("div");
+      div.className = `joy-msg ${m.role}`;
+      div.innerHTML = m.html;
+      messages.appendChild(div);
+    });
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // 恢复窗口打开状态
+  if (session.open) box.classList.add("open");
 
   async function send() {
     const text = input.value.trim();
@@ -147,6 +180,7 @@
       history.push({ role: "user", content: text });
       history.push({ role: "bot", content: reply });
       if (history.length > 12) history = history.slice(-12);  // 最多保留6轮
+      saveSession();
 
     } catch (e) {
       typing.className = "joy-msg bot";
